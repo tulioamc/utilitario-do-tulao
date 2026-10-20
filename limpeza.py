@@ -79,6 +79,27 @@ def espaco_em_disco(st):
     return getattr(st, "st_blocks", 0) * 512
 
 
+def espaco_do_disco():
+    """total / livre de fato / disponível como o Finder mostra.
+    O Finder soma ao livre o espaço "liberável" (arquivos de nuvem já
+    sincronizados, caches, backups locais) que o macOS apaga sozinho
+    quando precisa. Esse número vem da chave
+    NSURLVolumeAvailableCapacityForImportantUsageKey."""
+    uso = shutil.disk_usage(str(HOME))
+    disponivel = uso.free
+    try:
+        from Foundation import NSURL
+        url = NSURL.fileURLWithPath_(str(HOME))
+        chave = "NSURLVolumeAvailableCapacityForImportantUsageKey"
+        valores, _erro = url.resourceValuesForKeys_error_([chave], None)
+        if valores is not None and valores.get(chave) is not None:
+            disponivel = max(int(valores[chave]), uso.free)
+    except Exception:
+        pass
+    return {"total": uso.total, "livre": uso.free, "disponivel": disponivel,
+            "liberavel": max(0, disponivel - uso.free), "usado": uso.total - disponivel}
+
+
 # ==========================================================================
 # Nuvens
 # ==========================================================================

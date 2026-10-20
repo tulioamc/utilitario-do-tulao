@@ -35,7 +35,7 @@ try:
 except Exception:
     TTFont = None
 
-APP_VERSION = "3.5.0"
+APP_VERSION = "3.5.1"
 GITHUB_REPO = "tulioamc/utilitario-do-tulao"
 GITHUB_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 
@@ -1241,8 +1241,7 @@ class Api:
     def limpeza_resumo(self):
         try:
             L = self._limpeza()
-            uso = shutil.disk_usage(str(Path.home()))
-            return {"total": uso.total, "livre": uso.free, "usado": uso.total - uso.free,
+            return {**L.espaco_do_disco(),
                     "nuvens": L.detectar_nuvens(), "home": str(Path.home()),
                     "tem_evict": Path(L.FILEPROVIDERCTL).exists(),
                     "ultimo": L.ler_ultimo()}

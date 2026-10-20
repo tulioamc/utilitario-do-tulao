@@ -1105,9 +1105,12 @@
     try {
       const r = await chamar("limpeza_resumo");
       LZ.resumo = r;
-      $("#limpeza-livre").textContent = fmtBytes(r.livre) + " livres";
+      $("#limpeza-livre").textContent = fmtBytes(r.disponivel) + " disponíveis";
       $("#limpeza-barra-uso").style.width = (r.usado / r.total * 100).toFixed(1) + "%";
-      $("#limpeza-disco-detalhe").textContent = `${fmtBytes(r.usado)} usados de ${fmtBytes(r.total)}`;
+      $("#limpeza-barra-liberavel").style.width = (r.liberavel / r.total * 100).toFixed(1) + "%";
+      $("#limpeza-disco-detalhe").textContent = r.liberavel > 0
+        ? `${fmtBytes(r.livre)} vazios + ${fmtBytes(r.liberavel)} que o Mac libera sozinho quando precisa (igual ao Finder) · disco de ${fmtBytes(r.total)}`
+        : `${fmtBytes(r.usado)} usados de ${fmtBytes(r.total)}`;
 
       const lista = $("#limpeza-nuvens-lista");
       lista.innerHTML = "";

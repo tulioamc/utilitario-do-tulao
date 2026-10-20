@@ -344,9 +344,11 @@ table.fontes tbody td { font-size: 14px; color: var(--texto); padding: 10px 14px
 .limpeza-topo { display: grid; grid-template-columns: 300px 1fr; gap: 16px; margin-bottom: 16px; }
 .limpeza-topo .card { padding: 18px 20px; }
 .limpeza-rotulo { font-size: 12px; font-weight: 700; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
-.limpeza-numero { font-size: 26px; font-weight: 700; color: var(--texto); margin-bottom: 10px; }
+.limpeza-numero { font-size: 22px; white-space: nowrap; font-weight: 700; color: var(--texto); margin-bottom: 10px; }
 .limpeza-barra { height: 10px; background: #e5e5ea; border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
+.limpeza-barra { display: flex; }
 .limpeza-barra > div { height: 100%; background: var(--roxo); width: 0; transition: width .3s; }
+.limpeza-barra > div.liberavel { background: var(--roxo); opacity: .3; }
 .limpeza-nuvens-lista { display: flex; flex-direction: column; gap: 8px; }
 .limpeza-nuvem { display: flex; align-items: center; gap: 10px; font-size: 13px; }
 .limpeza-nuvem .nome { font-weight: 700; color: var(--texto); }
