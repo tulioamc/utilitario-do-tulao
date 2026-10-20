@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Utilitário do Tulão</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <div class="cabecalho">
+    <div class="marca">Utilitário do Tulão</div>
+    <div class="cabecalho-direita">
+      <div class="versao" id="versao-rodape">v…</div>
+      <button type="button" class="btn-icone" id="btn-config" title="Cores da interface" aria-label="Cores da interface">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <button type="button" class="aba-btn ativa" data-aba="gif">
+      <svg width="22" height="22" viewBox="0 0 91.67 91.67" fill="none">
+        <rect x="12.72" y="13.84" width="65.96" height="64" rx="13.26" ry="13.26" stroke="currentColor" stroke-width="5"/>
+        <path fill="currentColor" stroke="none" d="M38.8,57.95c-.79,0-1.47-.56-1.63-1.33h0c-1.04,1.04-2.79,1.63-5.1,1.63-3.68,0-5.9-1.36-7.15-4-.98-2.08-1.1-5.25-1.1-7.98,0-2.58.21-5.66,1.07-7.68.98-2.19,3.32-4.51,8.36-4.51s7.59,2.34,8.42,4.92c.16.45.28,1.21.36,2.05.09.97-.68,1.81-1.65,1.81h-3.14c-.78,0-1.44-.57-1.6-1.33-.06-.31-.14-.62-.23-.89-.3-.74-1.04-1.27-2.02-1.27-1.13,0-1.84.33-2.25,1.25-.47,1.27-.62,3.5-.62,5.69s.24,4.54.56,5.43c.33,1.07,1.1,1.6,2.58,1.6s2.49-.71,2.55-2.08v-.53c0-.92-.74-1.66-1.66-1.66h-.09c-.92,0-1.66-.74-1.66-1.66v-1.66c0-.92.74-1.66,1.66-1.66h6.14c.92,0,1.66.74,1.66,1.66v6.35c0,1.5.02,3.06.03,4.19.01.93-.73,1.68-1.66,1.68h-1.85Z"/>
+        <path fill="currentColor" stroke="none" d="M44.03,56.29v-20.25c0-.92.74-1.66,1.66-1.66h3.38c.92,0,1.66.74,1.66,1.66v20.25c0,.92-.74,1.66-1.66,1.66h-3.38c-.92,0-1.66-.74-1.66-1.66Z"/>
+        <path fill="currentColor" stroke="none" d="M59.36,41.58v.36c0,.92.74,1.66,1.66,1.66h4.74c.92,0,1.66.74,1.66,1.66v2.17c0,.92-.74,1.66-1.66,1.66h-4.74c-.92,0-1.66.74-1.66,1.66v5.55c0,.92-.74,1.66-1.66,1.66h-3.14c-.92,0-1.66-.74-1.66-1.66v-20.25c0-.92.74-1.66,1.66-1.66h11.8c.92,0,1.66.74,1.66,1.66v2.22c0,.92-.74,1.66-1.66,1.66h-5.34c-.92,0-1.66.74-1.66,1.66Z"/>
+      </svg>
+      <span class="rotulo">GIF</span>
+    </button>
+    <button type="button" class="aba-btn" data-aba="audio">
+      <svg width="22" height="22" viewBox="0 0 91.67 91.67" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="12.72" y="13.84" width="65.96" height="64" rx="13.26" ry="13.26"/>
+        <circle cx="32.16" cy="59.16" r="6.98"/>
+        <circle cx="57.5" cy="53.91" r="6.98"/>
+        <line x1="39.14" y1="59.16" x2="39.14" y2="31.17"/>
+        <line x1="64.5" y1="53.52" x2="64.5" y2="25.53"/>
+        <line x1="39.14" y1="31.17" x2="64.5" y2="25.53"/>
+        <line x1="39.14" y1="38.74" x2="64.5" y2="33.11"/>
+      </svg>
+      <span class="rotulo">Áudio</span>
+    </button>
+    <button type="button" class="aba-btn" data-aba="youtube">
+      <svg width="22" height="22" viewBox="0 0 91.67 91.67" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M36.19,37.45v16.78c0,3.37,3.68,5.45,6.57,3.72l13.98-8.39c2.81-1.68,2.81-5.75,0-7.44l-13.98-8.39c-2.89-1.73-6.57.35-6.57,3.72Z"/>
+        <rect x="13.53" y="13.84" width="65.96" height="64" rx="13.26" ry="13.26"/>
+      </svg>
+      <span class="rotulo">YouTube</span>
+    </button>
+    <button type="button" class="aba-btn" data-aba="social">
+      <svg width="22" height="22" viewBox="0 0 91.67 91.67" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="13.53" y="13.84" width="65.96" height="64" rx="13.26" ry="13.26"/>
+        <circle cx="67.19" cy="26.01" r="4.01" fill="currentColor" stroke="none"/>
+        <circle cx="46.51" cy="45.84" r="15.96"/>
+      </svg>
+      <span class="rotulo">IG/TikTok</span>
+    </button>
+    <button type="button" class="aba-btn" data-aba="pinterest">
+      <svg width="22" height="22" viewBox="0 0 91.67 91.67" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M39.49,77.84l7.52-31.7c.39-1.65-.6-3.31-2.23-3.76h0c-2.11-.57-4.15,1.14-3.95,3.32l2.32,11.28c.63,3.05,2.64,5.71,5.54,6.84,1.3.51,2.8.73,4.44.33.25-.06.46-.12.64-.19,7.71-2.94,13.02-10.75,12.18-19.67s-7.93-16.09-16.78-17.08c-11.51-1.28-21.25,7.69-21.25,18.94,0,5.24,2.11,9.98,5.53,13.42"/>
+        <rect x="12.72" y="13.84" width="65.96" height="64" rx="13.26" ry="13.26"/>
+      </svg>
+      <span class="rotulo">Pinterest</span>
+    </button>
+    <button type="button" class="aba-btn" data-aba="renomear">
+      <svg width="22" height="22" viewBox="0 0 91.67 91.67" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round">
+        <path stroke-linecap="square" d="M52.71,30.65h-1.93c-2.73,0-4.94,2.21-4.94,4.94v20.49c0,2.73,2.21,4.94,4.94,4.94h1.93"/>
+        <path stroke-linecap="square" d="M38.96,30.65h1.93c2.73,0,4.94,2.21,4.94,4.94v20.49c0,2.73-2.21,4.94-4.94,4.94h-1.93"/>
+        <rect stroke-linecap="round" x="12.86" y="13.84" width="65.96" height="64" rx="13.26" ry="13.26"/>
+      </svg>
+      <span class="rotulo">Renomear</span>
+    </button>
+    <button type="button" class="aba-btn" data-aba="fontes">
+      <div class="aa">Aa</div>
+      <span class="rotulo">Fontes</span>
+    </button>
+    <button type="button" class="aba-btn" data-aba="codigo">
+      <svg width="22" height="22" viewBox="0 0 91.67 91.67" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="12.72" y="13.84" width="65.96" height="64" rx="13.26" ry="13.26"/>
+        <polyline points="38.5,31 24.5,45.84 38.5,60.67"/>
+        <polyline points="53.5,31 67.5,45.84 53.5,60.67"/>
+        <line x1="48.5" y1="27" x2="43.5" y2="65"/>
+      </svg>
+      <span class="rotulo">Código</span>
+    </button>
+  </nav>
+
+  <main class="main tulao-scroll">
+
+    <!-- ============================================================ GIF -->
+    <section class="pagina ativa" id="pagina-gif">
+      <div class="titulo-pagina">
+        <div class="t">GIF</div>
+        <div class="s">Converta vídeos em GIF otimizado, com prévia ao lado.</div>
+      </div>
+      <div class="duas-colunas">
+        <div class="card">
+          <div id="gif-dropzone" class="dropzone">
+            <div class="txt" id="gif-dropzone-txt">Arraste o vídeo para cá&#10;ou clique para escolher</div>
+          </div>
+
+          <div class="opcao-linha">
+            <div class="rotulo">FPS:</div>
+            <div class="campo" id="gif-fps-slider"></div>
+          </div>
+          <div class="opcao-linha">
+            <div class="rotulo">Otimização:</div>
+            <div class="campo" id="gif-otim-slider"></div>
+          </div>
+          <div class="opcao-linha">
+            <div class="rotulo">Cores:</div>
+            <div class="campo" id="gif-cores-slider"></div>
+          </div>
+          <div class="opcao-linha">
+            <div class="rotulo">Dithering:</div>
+            <div class="campo" id="gif-dither-dd" style="max-width:290px"></div>
+          </div>
+          <div class="opcao-linha" style="margin-bottom:20px">
+            <div class="rotulo">Largura × Altura:</div>
+            <div class="campo linha-flex">
+              <input type="text" id="gif-largura" value="" placeholder="Original" style="width:68px;text-align:center">
+              <span style="color:var(--texto-secundario)">×</span>
+              <input type="text" id="gif-altura" value="" placeholder="Original" style="width:68px;text-align:center">
+              <span style="font-size:14px;color:var(--texto-secundario)">px</span>
+              <button class="btn secundario pequeno" id="gif-original">Original</button>
+            </div>
+          </div>
+
+          <button class="btn bloco" id="gif-converter">Converter</button>
+          <div class="progresso"><div class="barra" id="gif-barra"></div></div>
+          <div class="status" id="gif-status">Pronto.</div>
+          <div class="linha-flex" style="margin-top:10px">
+            <button class="btn secundario pequeno" id="gif-escolher-pasta">Pasta de saída…</button>
+            <span class="pista texto-truncado" id="gif-pasta-txt">Mesma pasta do vídeo</span>
+          </div>
+        </div>
+
+        <div class="previa-coluna">
+          <div class="caixa-escura" id="gif-caixa">A prévia do GIF aparece aqui</div>
+          <div class="previa-tamanho" id="gif-tamanho">Tamanho estimado: —</div>
+          <div class="previa-detalhe" id="gif-detalhe">12 fps · 256 cores · Bayer (leve)</div>
+          <button class="btn secundario pequeno" id="gif-abrir-pasta" style="display:none;align-self:flex-start">Mostrar no Finder</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== ÁUDIO -->
+    <section class="pagina" id="pagina-audio">
+      <div class="titulo-pagina">
+        <div class="t">Áudio</div>
+        <div class="s">Converta entre WAV, MP3, OPUS, OGG e OGA.</div>
+      </div>
+      <div class="card" style="width:460px">
+        <div id="audio-dropzone" class="dropzone">
+          <div class="txt" id="audio-dropzone-txt">Arraste o áudio para cá&#10;ou clique para escolher</div>
+        </div>
+
+        <div style="font-size:15px;font-weight:700;color:var(--texto);margin-bottom:10px">Converter para:</div>
+        <div id="audio-formato-dd" style="margin-bottom:18px"></div>
+
+        <div class="opcao-linha">
+          <div class="rotulo">Bitrate:</div>
+          <div class="campo" id="audio-bitrate-slider"></div>
+        </div>
+
+        <div style="font-size:15px;color:var(--texto);margin-bottom:10px">Taxa de amostragem:</div>
+        <div id="audio-taxa-dd" style="margin-bottom:20px"></div>
+
+        <button class="btn bloco" id="audio-converter">Converter</button>
+        <div class="progresso"><div class="barra" id="audio-barra"></div></div>
+        <div class="status" id="audio-status" style="margin-bottom:16px">Pronto.</div>
+        <div class="linha-flex">
+          <button class="btn secundario pequeno" id="audio-escolher-pasta">Pasta de saída…</button>
+          <span class="pista texto-truncado" id="audio-pasta-txt">Mesma pasta do arquivo</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== YOUTUBE -->
+    <section class="pagina" id="pagina-youtube">
+      <div class="titulo-pagina">
+        <div class="t">YouTube</div>
+        <div class="s">Baixe vídeos do YouTube em MP4, na resolução escolhida.</div>
+      </div>
+      <div class="duas-colunas">
+        <div class="card">
+          <div style="font-size:15px;color:var(--texto);margin-bottom:8px">Link do YouTube:</div>
+          <div class="linha-flex" style="margin-bottom:18px">
+            <input type="url" id="youtube-url" placeholder="https://..." class="flex-1">
+            <button class="btn secundario" id="youtube-colar">Colar</button>
+            <button class="btn" id="youtube-buscar">Buscar</button>
+          </div>
+
+          <div class="opcao-linha">
+            <div class="rotulo">Resolução:</div>
+            <div class="campo" id="youtube-resolucao-dd" style="max-width:290px"></div>
+          </div>
+          <div class="opcao-linha" style="margin-bottom:20px">
+            <div class="rotulo">Salvar em:</div>
+            <div class="campo linha-flex espaco">
+              <span class="flex-1 pista texto-truncado" id="youtube-pasta-txt">Escolha a pasta…</span>
+              <button class="btn secundario pequeno" id="youtube-escolher-pasta">Escolher...</button>
+            </div>
+          </div>
+
+          <button class="btn bloco" id="youtube-baixar">Baixar</button>
+          <div class="progresso"><div class="barra" id="youtube-barra"></div></div>
+          <div class="status" id="youtube-status" style="margin-bottom:12px"></div>
+          <button class="btn secundario pequeno" id="youtube-atualizar-ferramenta" style="margin-bottom:10px">Atualizar baixador</button>
+          <div class="pista">Use o baixador apenas para conteúdo que você tenha autorização para baixar.</div>
+        </div>
+
+        <div class="caixa-escura" id="youtube-caixa">Busque um vídeo para ver os detalhes</div>
+      </div>
+    </section>
+
+    <!-- ========================================================= SOCIAL -->
+    <section class="pagina" id="pagina-social">
+      <div class="titulo-pagina">
+        <div class="t">Instagram / TikTok</div>
+        <div class="s">Baixe vídeos (e fotos de carrossel) do Instagram e do TikTok.</div>
+      </div>
+      <div class="duas-colunas">
+        <div class="card">
+          <div style="font-size:15px;color:var(--texto);margin-bottom:8px">Link do Instagram ou TikTok:</div>
+          <div class="linha-flex" style="margin-bottom:20px">
+            <input type="url" id="social-url" placeholder="https://..." class="flex-1">
+            <button class="btn secundario" id="social-colar">Colar</button>
+            <button class="btn" id="social-buscar">Buscar</button>
+          </div>
+
+          <div class="opcao-linha" style="margin-bottom:20px">
+            <div class="rotulo">Salvar em:</div>
+            <div class="campo linha-flex espaco">
+              <span class="flex-1 pista texto-truncado" id="social-pasta-txt">Escolha a pasta…</span>
+              <button class="btn secundario pequeno" id="social-escolher-pasta">Escolher...</button>
+            </div>
+          </div>
+
+          <button class="btn bloco" id="social-baixar">Baixar</button>
+          <div class="progresso"><div class="barra" id="social-barra"></div></div>
+          <div class="status" id="social-status" style="margin-bottom:12px"></div>
+          <button class="btn secundario pequeno" id="social-atualizar-ferramenta" style="margin-bottom:10px">Atualizar baixador</button>
+          <div class="pista">Se um link parar de funcionar, o site pode ter mudado algo; tente o botão acima.</div>
+        </div>
+
+        <div class="caixa-escura" id="social-caixa">Cole um link e clique em Buscar</div>
+      </div>
+    </section>
+
+    <!-- ====================================================== PINTEREST -->
+    <section class="pagina" id="pagina-pinterest">
+      <div class="titulo-pagina">
+        <div class="t">Pinterest</div>
+        <div class="s">Baixe as imagens de um board, na maior qualidade disponível.</div>
+      </div>
+      <div class="duas-colunas">
+        <div class="card">
+          <div style="font-size:15px;color:var(--texto);margin-bottom:8px">Link do board do Pinterest:</div>
+          <div class="linha-flex" style="margin-bottom:14px">
+            <input type="url" id="pinterest-url" placeholder="https://..." class="flex-1">
+            <button class="btn secundario" id="pinterest-colar">Colar</button>
+            <button class="btn" id="pinterest-buscar">Buscar</button>
+          </div>
+
+          <div class="opcao-linha" style="margin-bottom:10px">
+            <div class="rotulo">Salvar em:</div>
+            <div class="campo linha-flex espaco">
+              <span class="flex-1 pista texto-truncado" id="pinterest-pasta-txt">Escolha a pasta…</span>
+              <button class="btn secundario pequeno" id="pinterest-escolher-pasta">Escolher...</button>
+            </div>
+          </div>
+          <div class="pista" style="margin-bottom:20px">As imagens são salvas numa subpasta com o nome do board.</div>
+
+          <button class="btn bloco" id="pinterest-baixar">Baixar todas as imagens</button>
+          <div class="progresso"><div class="barra" id="pinterest-barra"></div></div>
+          <div class="pista" id="pinterest-status"></div>
+        </div>
+
+        <div class="previa-coluna">
+          <div class="caixa-escura" id="pinterest-caixa" style="min-height:280px">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5.5"/><polygon points="7.2,12.5 16.8,12.5 12,20" fill="#aaaaaa" stroke="none"/></svg>
+          </div>
+          <div class="previa-tamanho" id="pinterest-titulo">Cole um link e clique em Buscar</div>
+          <div class="grid-thumbs" id="pinterest-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= RENOMEAR -->
+    <section class="pagina" id="pagina-renomear">
+      <div class="titulo-pagina">
+        <div class="t">Renomear</div>
+        <div class="s">Monte o nome por blocos: arraste a alça para reordenar, use [+] e [×] para adicionar ou remover.</div>
+      </div>
+      <div class="renomear-grid" id="renomear-grid">
+        <div class="card renomear-navegador" id="renomear-navegador" style="padding:18px">
+          <div style="font-size:15px;font-weight:700;color:var(--texto);margin-bottom:10px">Navegador de arquivos</div>
+          <div class="pista" id="renomear-pasta-atual" style="margin-bottom:10px">Nenhuma pasta selecionada</div>
+          <div class="linha-flex" style="gap:8px;margin-bottom:10px">
+            <button class="btn secundario flex-1" id="renomear-escolher-pasta" style="margin-bottom:0">Pasta</button>
+            <button class="btn secundario flex-1" id="renomear-escolher-arquivos" style="margin-bottom:0">Arquivos</button>
+          </div>
+          <input type="text" id="renomear-filtro" placeholder="Filtrar por nome…" style="width:100%;margin-bottom:10px">
+          <div class="lista-arquivos" id="renomear-lista"></div>
+          <div class="renomear-resize-h" id="renomear-resize-h" title="Arraste para redimensionar"></div>
+        </div>
+        <div class="renomear-resize-v" id="renomear-resize-v" title="Arraste para redimensionar"></div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="subabas">
+            <button class="subaba-btn ativa" data-sub="montar">Montar novo nome</button>
+            <button class="subaba-btn" data-sub="retirar">Retirar trecho</button>
+            <button class="subaba-btn" data-sub="substituir">Substituir trecho</button>
+          </div>
+
+          <div class="card" id="renomear-sub-montar">
+            <div class="construtor-dica">Monte o nome por blocos. Arraste a alça (⠿) para reordenar; use os [+] para inserir um bloco novo e o [×] dentro do bloco para remover.</div>
+            <div class="construtor" id="renomear-construtor"></div>
+          </div>
+
+          <div class="card" id="renomear-sub-retirar" style="display:none">
+            <div class="construtor-dica">Remove um trecho de texto do nome dos arquivos selecionados.</div>
+            <div style="font-size:14px;color:var(--texto);margin-bottom:6px">Buscar por:</div>
+            <input type="text" id="retirar-buscar" placeholder="Ex.: IMG_" style="width:100%;margin-bottom:14px">
+            <label class="checkbox-linha"><input type="checkbox" id="retirar-case"> Diferenciar maiúsculas/minúsculas</label>
+          </div>
+
+          <div class="card" id="renomear-sub-substituir" style="display:none">
+            <div class="construtor-dica">Troca um trecho de texto por outro no nome dos arquivos selecionados.</div>
+            <div class="linha-flex" style="align-items:flex-start;gap:14px;margin-bottom:14px">
+              <div class="flex-1">
+                <div style="font-size:14px;color:var(--texto);margin-bottom:6px">Buscar por:</div>
+                <input type="text" id="subst-buscar" placeholder="Ex.: foto" style="width:100%">
+              </div>
+              <div class="flex-1">
+                <div style="font-size:14px;color:var(--texto);margin-bottom:6px">Substituir por:</div>
+                <input type="text" id="subst-trocar" placeholder="Ex.: pic" style="width:100%">
+              </div>
+            </div>
+            <label class="checkbox-linha"><input type="checkbox" id="subst-case"> Diferenciar maiúsculas/minúsculas</label>
+          </div>
+
+          <div class="opcoes-preview-grid">
+            <div class="card" style="padding:18px">
+              <div style="font-size:14px;font-weight:700;color:var(--texto);margin-bottom:10px">Opções</div>
+              <label class="checkbox-linha" style="margin-bottom:14px"><input type="checkbox" id="renomear-manter-ext" checked> Manter extensão</label>
+              <button class="btn secundario bloco" id="renomear-resetar">Resetar</button>
+            </div>
+            <div class="card" style="padding:18px">
+              <div style="font-size:14px;font-weight:700;color:var(--texto);margin-bottom:10px">Pré-visualização</div>
+              <div class="previa-wrap">
+                <table class="previa">
+                  <thead><tr><td>Nome atual</td><td>Novo nome</td></tr></thead>
+                  <tbody id="renomear-tabela-corpo"></tbody>
+                </table>
+              </div>
+              <button class="btn bloco" id="renomear-aplicar" style="margin-bottom:0">Renomear arquivos</button>
+            </div>
+          </div>
+          <div class="status" id="renomear-status"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= FONTES -->
+    <section class="pagina" id="pagina-fontes">
+      <div class="titulo-pagina">
+        <div class="t">Fontes</div>
+        <div class="s">Corrige os metadados internos (família/estilo) de arquivos de fonte, sem depender do nome do arquivo.</div>
+      </div>
+      <div class="card" style="max-width:780px">
+        <div class="linha-flex" style="margin-bottom:18px">
+          <div style="font-size:15px;color:var(--texto);flex-shrink:0">Família:</div>
+          <input type="text" id="fontes-familia" placeholder="Nome da família" class="flex-1">
+          <button class="btn secundario" id="fontes-selecionar">Selecionar fontes…</button>
+          <button class="btn secundario" id="fontes-limpar">Limpar</button>
+        </div>
+
+        <div class="previa-wrap">
+          <table class="fontes">
+            <thead><tr><td style="flex:2">Arquivo</td><td>Peso</td><td>Subfamília</td></tr></thead>
+            <tbody id="fontes-tabela-corpo"></tbody>
+          </table>
+        </div>
+
+        <div class="linha-flex" style="margin-bottom:18px">
+          <span class="flex-1 pista" id="fontes-pasta-txt">Saída: pasta ao lado das fontes</span>
+          <button class="btn secundario pequeno" id="fontes-escolher-pasta">Escolher saída…</button>
+        </div>
+
+        <button class="btn bloco" id="fontes-corrigir" style="margin-bottom:0">Corrigir fontes</button>
+        <div class="status" id="fontes-status" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================= CÓDIGO -->
+    <section class="pagina" id="pagina-codigo">
+      <div class="titulo-pagina">
+        <div class="t">Código</div>
+        <div class="s">Ferramentas de transformação de código. Vou adicionando novas aqui ao lado conforme forem pedidas.</div>
+      </div>
+
+      <div class="subabas" id="codigo-subabas">
+        <button class="subaba-btn ativa" data-codigo-sub="embed-vimeo-behance">Embed Vimeo Behance</button>
+      </div>
+
+      <div class="card codigo-ferramenta ativa" id="codigo-sub-embed-vimeo-behance" style="max-width:880px">
+        <div class="construtor-dica">Cole o &lt;iframe&gt; de embed do Vimeo (Behance usa o mesmo player). O código gerado troca os parâmetros por <code>background=1</code>, pronto pra rodar em loop sem controles.</div>
+
+        <div style="font-size:13px;font-weight:700;color:var(--texto);margin-bottom:6px">Código original</div>
+        <textarea id="codigo-evb-entrada" placeholder="Cole aqui o &lt;iframe src=&quot;https://player.vimeo.com/video/...&quot; ...&gt;&lt;/iframe&gt;" rows="4" style="width:100%;margin-bottom:16px;font-family:ui-monospace, Menlo, monospace;font-size:12.5px"></textarea>
+
+        <div style="font-size:13px;font-weight:700;color:var(--texto);margin-bottom:6px">Código gerado</div>
+        <textarea id="codigo-evb-saida" placeholder="O código gerado aparece aqui" rows="2" readonly style="width:100%;margin-bottom:14px;font-family:ui-monospace, Menlo, monospace;font-size:12.5px"></textarea>
+
+        <button class="btn secundario" id="codigo-evb-copiar" disabled>Copiar código</button>
+        <div class="status" id="codigo-evb-status" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="overlay" id="update-overlay">
+  <div class="modal">
+    <h2>Atualização disponível</h2>
+    <p id="update-texto"></p>
+    <div class="botoes">
+      <button class="btn secundario" id="update-depois">Agora não</button>
+      <button class="btn" id="update-agora">Fechar e atualizar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="config-overlay">
+  <div class="modal modal-largo">
+    <h2>Cores da interface</h2>
+    <p>Escolha as cores usadas no app. As mudanças aparecem na hora; clique em Salvar pra manter.</p>
+    <div class="config-linha" style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--borda)">
+      <label class="checkbox-linha" style="flex:1">
+        <input type="checkbox" id="config-modo-escuro"> Modo escuro
+      </label>
+    </div>
+    <div class="config-cores" id="config-cores-lista">
+      <div class="config-linha" data-cor="branco">
+        <input type="color" class="config-swatch" value="#ffffff">
+        <span class="config-nome">Branco (fundo dos cartões)</span>
+        <span class="config-hex">#ffffff</span>
+      </div>
+      <div class="config-linha" data-cor="vermelho">
+        <input type="color" class="config-swatch" value="#ef4444">
+        <span class="config-nome">Vermelho</span>
+        <span class="config-hex">#ef4444</span>
+      </div>
+      <div class="config-linha" data-cor="roxo">
+        <input type="color" class="config-swatch" value="#7c3aed">
+        <span class="config-nome">Roxo (destaque)<br><small class="config-subnota">O roxo claro (fundo das abas ativas) segue esta cor sozinho.</small></span>
+        <span class="config-hex">#7c3aed</span>
+      </div>
+      <div class="config-linha" data-cor="cinza_claro">
+        <input type="color" class="config-swatch" value="#f5f5f7">
+        <span class="config-nome">Cinza claro (fundo da janela)</span>
+        <span class="config-hex">#f5f5f7</span>
+      </div>
+      <div class="config-linha" data-cor="cinza_escuro">
+        <input type="color" class="config-swatch" value="#111111">
+        <span class="config-nome">Cinza escuro (prévias)</span>
+        <span class="config-hex">#111111</span>
+      </div>
+    </div>
+
+    <div style="margin-top:4px;margin-bottom:18px;padding-top:16px;border-top:1px solid var(--borda)">
+      <button class="btn secundario bloco" id="config-atualizar-tudo" style="margin-bottom:8px">Atualizar tudo</button>
+      <div class="pista">Atualiza o baixador (yt-dlp) e procura uma nova versão do app no GitHub.</div>
+      <div class="status" id="config-atualizar-tudo-status" style="margin-top:8px"></div>
+    </div>
+
+    <div class="botoes">
+      <button class="btn secundario" id="config-restaurar">Restaurar padrão</button>
+      <button class="btn secundario" id="config-fechar">Fechar</button>
+      <button class="btn" id="config-salvar">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

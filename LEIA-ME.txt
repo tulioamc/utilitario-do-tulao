@@ -1,0 +1,177 @@
+UTILITÁRIO DO TULÃO
+Sete ferramentas em um só app para Mac, em abas:
+  - GIF:              converte vídeos (MP4, MOV, MKV, WEBM...) em GIF otimizado
+  - Áudio:             converte entre WAV, MP3, OPUS, OGG e OGA, em qualquer direção
+  - YouTube:           baixa vídeos do YouTube em MP4, na resolução escolhida
+  - Instagram/TikTok:  baixa vídeos (e fotos de carrossel) em MP4/JPG
+  - Pinterest:         baixa as imagens (JPG/PNG/GIF) de um board
+  - Renomear:          renomeia vários arquivos de uma vez: monte um nome novo
+                       por blocos, ou apenas retire/substitua um trecho
+  - Fontes:            corrige metadados (nome/família) de arquivos de fonte
+
+------------------------------------------------------------
+O QUE TEM NESTA PASTA
+------------------------------------------------------------
+  Criar DMG.command   Cria o instalador (Utilitário do Tulão.dmg) com um duplo clique
+  criar_dmg.sh        O script que faz o trabalho (usado pelo arquivo acima)
+  app.py              O programa (back-end em Python)
+  web/                A interface (HTML/CSS/JS) que o app mostra na janela
+  updater.py          Usado pela atualização automática pelo GitHub
+  icone.png           O ícone do app
+  LEIA-ME.txt         Este arquivo
+
+Mantenha todos juntos, na mesma pasta. Ela pode estar em qualquer lugar do Mac.
+
+------------------------------------------------------------
+1) CRIAR O INSTALADOR (DMG)
+------------------------------------------------------------
+Dê um duplo clique em "Criar DMG.command".
+O arquivo "Utilitário do Tulão.dmg" aparece na MESMA pasta em que estão estes arquivos.
+
+Se o macOS bloquear o arquivo ("não pode ser aberto"):
+  - clique nele com o botão direito, escolha "Abrir" e confirme; ou
+  - abra o Terminal, digite "bash " (com espaço no fim), arraste o arquivo
+    criar_dmg.sh para dentro da janela do Terminal e aperte Enter.
+
+------------------------------------------------------------
+2) INSTALAR / ATUALIZAR
+------------------------------------------------------------
+  1. Abra o "Utilitário do Tulão.dmg".
+  2. Arraste "Utilitário do Tulão" para a pasta Applications (ao lado), substituindo
+     a versão antiga se já existir uma.
+  3. Abra o app pela pasta Applications ou pelo Launchpad.
+
+Na PRIMEIRA vez (ou se faltar algo), o app abre o Terminal e instala tudo o
+que precisa: Homebrew, Python, FFmpeg, gifsicle, a biblioteca que desenha a
+janela do app (pywebview), o baixador de vídeos (yt-dlp, usado pelas abas
+YouTube e Instagram/TikTok) e a biblioteca de leitura de fontes (fonttools,
+usada na aba Fontes). Precisa de internet e da senha do seu Mac (ela não
+aparece enquanto você digita; é normal). Pode levar alguns minutos. Quando
+terminar, o programa abre sozinho. Nas próximas vezes abre direto.
+
+Se o macOS disser que o app é de "desenvolvedor não identificado":
+clique nele com o botão direito, escolha "Abrir" e confirme (só uma vez).
+Se aparecer só "O aplicativo não pode ser aberto" (sem a opção de confirmar),
+veja a seção 5 (Problemas) abaixo.
+
+------------------------------------------------------------
+3) USAR
+------------------------------------------------------------
+O app abre com sete abas no topo.
+
+O ícone de engrenagem no canto superior direito (ao lado da versão) abre as
+cores da interface: dá pra trocar o branco, o vermelho, o roxo, o cinza
+claro (fundo da janela) e o cinza escuro (caixas de prévia) por outras
+cores. As mudanças aparecem na hora; "Salvar" guarda pra sempre, "Restaurar
+padrão" volta pras cores originais.
+
+ABA GIF
+  1. Arraste o vídeo para a área tracejada (ou clique nela para escolher).
+  2. Ajuste as opções e veja a prévia e o tamanho estimado ao lado:
+       FPS ............ de 10 a 24
+       Otimização ..... de 0% a 100% (compressão com perda)
+       Cores .......... de 32 a 256
+       Dithering ...... Bayer (leve), sem dithering, Floyd-Steinberg, Sierra
+       Largura x Altura  ligadas na proporção; "Original" volta ao tamanho
+  3. Clique em Converter.
+  Salva na pasta do vídeo como nome_XXfps_optimized.gif. Se já existir, o novo
+  vira nome_XXfps_optimized(02).gif, (03)... Nada é sobrescrito.
+
+ABA ÁUDIO
+  Converte entre WAV, MP3, OPUS, OGG e OGA, em qualquer direção.
+  1. Arraste o arquivo para a área tracejada (ou clique nela para escolher).
+  2. Em "Converter para", escolha o formato de saída.
+  3. Ajuste o Bitrate (ignorado se o destino for WAV) e, se quiser, a Taxa
+     de amostragem.
+  4. Clique em Converter.
+  Salva como nome.<extensão escolhida>, sem sobrescrever (nome(02).mp3...).
+
+ABA YOUTUBE
+  1. Cole o link do vídeo (botão "Colar" ou Cmd+V) e clique em Buscar.
+  2. Escolha a resolução entre as que o vídeo realmente oferece.
+  3. Escolha a pasta em "Salvar em" e clique em Baixar.
+  Salva como Titulo-do-video_720p.mp4. Playlists: só o primeiro vídeo.
+
+ABA INSTAGRAM/TIKTOK
+  1. Cole o link do post, vídeo ou reel, e clique em Buscar.
+  2. Escolha a pasta em "Salvar em" e clique em Baixar.
+  Se o post for um carrossel (vários vídeos/fotos), todos os itens são
+  baixados, numerados (_01, _02...). Fotos ficam em JPG; vídeos, em MP4.
+
+ABA PINTEREST
+  1. Cole o link de um board (uma coleção de pins, não de um pin único) e
+     clique em Buscar.
+  2. Clique em "Baixar todas as imagens".
+  As imagens são salvas numa subpasta com o nome do board, já na maior
+  qualidade disponível. O Pinterest só entrega as imagens já carregadas na
+  página; boards muito grandes podem vir incompletos numa só busca.
+
+ABA RENOMEAR
+  1. Clique em "Escolher pasta…" e selecione os arquivos no navegador (ou
+     marque "Pasta atual" em Opções para aplicar a todos os arquivos dela).
+  2. Escolha uma das três sub-abas:
+     - Montar novo nome: monte o nome por blocos. Cada bloco é uma
+       "etiqueta" com uma alça de 6 pontinhos para arrastar e reordenar; um
+       [+] antes do primeiro bloco e entre quaisquer dois blocos insere um
+       bloco novo ali (com um menu para escolher o tipo: Texto, Separador,
+       Número ou Letra); um [×] dentro do próprio bloco o remove (menos o
+       bloco "Nome atual", que é obrigatório e não pode ser removido).
+     - Retirar trecho: digite um texto em "Buscar por" e ele é removido do
+       nome atual dos arquivos selecionados.
+     - Substituir trecho: digite o texto a buscar e o texto para trocar por
+       ele. Nos dois casos há uma opção para diferenciar maiúsculas de
+       minúsculas.
+  3. Veja o resultado na Pré-visualização e clique em "Renomear arquivos".
+
+ABA FONTES
+  Lê e corrige os metadados (nome da família/estilo) de arquivos de fonte
+  (TTF/OTF), útil quando um arquivo de fonte foi renomeado e o nome interno
+  não bate mais com o nome do arquivo.
+
+SOBRE DIREITOS AUTORAIS (YouTube, Instagram/TikTok e Pinterest)
+  Use essas abas só para conteúdo seu, de domínio público, com licença
+  aberta (Creative Commons) ou que você tenha autorização de baixar. Baixar
+  conteúdo de terceiros pode ir contra os Termos de Serviço dessas
+  plataformas e os direitos autorais de quem criou o conteúdo.
+
+  Esses sites mudam com frequência e podem quebrar o baixador. Nas abas
+  YouTube e Instagram/TikTok há um botão "Atualizar baixador": clique nele,
+  feche o app e abra de novo. Para a aba Pinterest (que não usa esse
+  baixador) e para qualquer link que continuar sem funcionar, me avise que
+  eu ajusto o programa.
+
+------------------------------------------------------------
+4) ATUALIZAR O PROGRAMA
+------------------------------------------------------------
+Substitua o app.py, a pasta web/ (e/ou o icone.png) nesta pasta, dê um duplo
+clique em "Criar DMG.command" de novo e reinstale o app pelo DMG novo.
+
+Se uma aba sumir ou parecer antiga depois de atualizar, o app instalado
+ainda é a versão de antes: refaça o DMG e reinstale por cima na pasta
+Applications.
+
+------------------------------------------------------------
+5) PROBLEMAS
+------------------------------------------------------------
+  - O app não abre, fecha sozinho ou mostra uma janela vazia: veja o
+    registro de erros em ~/Library/Logs/UtilitarioDoTulao.log
+  - A instalação falhou: abra o app de novo; ele tenta instalar o que faltar.
+  - "O aplicativo não pode ser aberto" (aviso simples, com só um botão OK):
+    normalmente é permissão perdida no arquivo interno do app. Abra o
+    Terminal e cole (ajustando se o app estiver em outro lugar):
+      chmod +x "/Applications/Utilitário do Tulão.app/Contents/MacOS/launcher" "/Applications/Utilitário do Tulão.app/Contents/Resources/instalar.command"
+    e tente abrir de novo. Se isso não resolver, tente também:
+      xattr -cr "/Applications/Utilitário do Tulão.app"
+    Isso costumava acontecer sempre que o app se atualizava sozinho (pelo
+    menu Configurações), porque o Python descompacta o zip da atualização
+    sem preservar essa permissão. A partir desta versão o updater.py já
+    restaura a permissão sozinho; se ainda assim aparecer esse aviso depois
+    de uma atualização automática, use os comandos acima.
+  - Arrastar o vídeo/áudio/fonte pra dentro da área tracejada: o macOS não
+    entrega pro app o caminho real de um arquivo arrastado da Finder (isso é
+    assim em qualquer navegador, por segurança). Por isso soltar o arquivo
+    ali abre o seletor normal de arquivos em vez de usar o arquivo arrastado
+    direto — geralmente já abre na pasta certa, só confirmar o arquivo.
+  - Um link (YouTube/Instagram/TikTok) parou de funcionar: tente o botão
+    "Atualizar baixador" na aba correspondente.
+  - Para desinstalar: arraste "Utilitário do Tulão" da pasta Applications para o Lixo.
