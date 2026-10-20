@@ -1,0 +1,55 @@
+# Publica uma nova versão (Release com o .app.zip) sempre que o APP_VERSION
+# do app.py mudar. Se a versão já existir, não faz nada.
+name: Publicar versão
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ler versão do app.py
+        id: v
+        run: |
+          V=$(grep -m1 '^APP_VERSION' app.py | cut -d'"' -f2)
+          echo "versao=$V" >> "$GITHUB_OUTPUT"
+          if gh release view "V$V" >/dev/null 2>&1; then
+            echo "Versão V$V já publicada. Nada a fazer."
+            echo "existe=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Conferir o código
+        if: steps.v.outputs.existe != '1'
+        run: |
+          python3 -m py_compile app.py limpeza.py updater.py
+          node --check web/app.js
+
+      - name: Montar o .app
+        if: steps.v.outputs.existe != '1'
+        run: |
+          APP="build/Utilitário do Tulão.app"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+          cp pacote/Info.plist "$APP/Contents/Info.plist"
+          cp pacote/launcher "$APP/Contents/MacOS/launcher"
+          cp pacote/instalar.command app.py limpeza.py updater.py icone.png icone.icns "$APP/Contents/Resources/"
+          cp -r web "$APP/Contents/Resources/web"
+          chmod +x "$APP/Contents/MacOS/launcher" "$APP/Contents/Resources/instalar.command"
+          cd build && zip -qry ../Utilitario.do.Tulao.app.zip "Utilitário do Tulão.app"
+
+      - name: Publicar
+        if: steps.v.outputs.existe != '1'
+        run: |
+          V="${{ steps.v.outputs.versao }}"
+          gh release create "V$V" Utilitario.do.Tulao.app.zip \
+            --title "V$V" --target "$GITHUB_SHA" \
+            --notes "$(git log -1 --pretty=%B)"
