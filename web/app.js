@@ -553,9 +553,9 @@
     });
   }
 
-  $all(".subaba-btn").forEach(btn => {
+  $all(".subaba-btn[data-sub]").forEach(btn => {
     btn.addEventListener("click", () => {
-      $all(".subaba-btn").forEach(b => b.classList.remove("ativa"));
+      $all(".subaba-btn[data-sub]").forEach(b => b.classList.remove("ativa"));
       btn.classList.add("ativa");
       R.subAba = btn.dataset.sub;
       ["montar", "retirar", "substituir"].forEach(s => {
@@ -1055,6 +1055,372 @@
     }
     toast("Código copiado.");
   });
+
+  // ============================================================= LIMPEZA
+
+  const LZ = {
+    resumo: null,
+    raizes: {},          // rótulo do dropdown -> caminho
+    raizMedida: null,    // caminho da última medição
+    pastaAtual: null,
+    itens: [],           // itens da pasta mostrada
+    parados: [],
+    selecionados: new Set(),
+    selParados: new Set(),
+    ocupado: false,
+    carregou: false,
+  };
+
+  function fmtBytes(n) {
+    n = Number(n || 0);
+    const un = ["B", "KB", "MB", "GB", "TB"];
+    let i = 0;
+    while (n >= 1024 && i < un.length - 1) { n /= 1024; i++; }
+    const casas = i >= 3 ? 1 : 0;
+    return n.toFixed(casas).replace(".", ",") + " " + un[i];
+  }
+
+  function seloNuvem(nome) {
+    if (!nome) return null;
+    const cls = nome === "Google Drive" ? "drive" : nome === "Dropbox" ? "dropbox" : "outro";
+    return el("span", { class: "selo " + cls, text: nome });
+  }
+
+  const ddLimpezaRaiz = criarDropdown($("#limpeza-raiz-dd"), { value: "Pasta pessoal (tudo)", options: ["Pasta pessoal (tudo)"] });
+
+  function confirmar(titulo, texto, rotuloSim) {
+    return new Promise(resolve => {
+      $("#limpeza-conf-titulo").textContent = titulo;
+      $("#limpeza-conf-texto").textContent = texto;
+      $("#limpeza-conf-sim").textContent = rotuloSim || "Confirmar";
+      const ov = $("#limpeza-confirmar");
+      ov.classList.add("aberto");
+      const fim = v => { ov.classList.remove("aberto"); $("#limpeza-conf-sim").onclick = null; $("#limpeza-conf-nao").onclick = null; resolve(v); };
+      $("#limpeza-conf-sim").onclick = () => fim(true);
+      $("#limpeza-conf-nao").onclick = () => fim(false);
+    });
+  }
+
+  async function carregarResumoLimpeza() {
+    try {
+      const r = await chamar("limpeza_resumo");
+      LZ.resumo = r;
+      $("#limpeza-livre").textContent = fmtBytes(r.livre) + " livres";
+      $("#limpeza-barra-uso").style.width = (r.usado / r.total * 100).toFixed(1) + "%";
+      $("#limpeza-disco-detalhe").textContent = `${fmtBytes(r.usado)} usados de ${fmtBytes(r.total)}`;
+
+      const lista = $("#limpeza-nuvens-lista");
+      lista.innerHTML = "";
+      LZ.raizes = { "Pasta pessoal (tudo)": r.home };
+      if (!r.nuvens.length) lista.appendChild(el("div", { class: "pista", text: "Não achei Drive nem Dropbox neste Mac." }));
+      r.nuvens.forEach(n => {
+        const rotulo = `${n.servico} · ${n.conta || n.caminho_bonito}`;
+        LZ.raizes[rotulo] = n.caminho;
+        const linha = el("div", { class: "limpeza-nuvem" });
+        linha.appendChild(seloNuvem(n.servico));
+        linha.appendChild(el("span", { class: "conta", text: n.conta || n.caminho_bonito, title: n.caminho_bonito }));
+        if (n.antiga) linha.appendChild(el("span", { class: "selo antigo", text: "conta antiga", title: "Pasta de uma conexão antiga do Drive. Confira se o conteúdo também está no Drive atual antes de apagar." }));
+        if (!n.liberavel) linha.appendChild(el("span", { class: "selo antigo", text: "formato antigo", title: "O app não consegue deixar só online nesse formato. Use o botão direito › Dropbox no Finder." }));
+        const acoes = el("div", { class: "acoes" });
+        acoes.appendChild(el("button", { class: "btn secundario pequeno", text: "Medir", onclick: () => { ddLimpezaRaiz.setValue(rotulo); medirLimpeza(n.caminho); } }));
+        if (n.liberavel) acoes.appendChild(el("button", {
+          class: "btn secundario pequeno", text: "Tudo só online",
+          onclick: () => liberarLimpeza([n.caminho], `todo o ${n.servico} (${n.conta})`, true),
+        }));
+        linha.appendChild(acoes);
+        lista.appendChild(linha);
+      });
+      const atual = ddLimpezaRaiz.getValue();
+      ddLimpezaRaiz.setOptions(Object.keys(LZ.raizes), LZ.raizes[atual] ? atual : "Pasta pessoal (tudo)");
+      if (!r.tem_evict) toast("Este macOS não tem o comando de liberar (fileproviderctl). A medição funciona normalmente.");
+      mostrarUltimoAutomatico(r.ultimo);
+    } catch (e) {
+      $("#limpeza-disco-detalhe").textContent = "Erro: " + e.message;
+    }
+  }
+
+  function setOcupado(sim) {
+    LZ.ocupado = sim;
+    $("#limpeza-varrer").disabled = sim;
+    $("#limpeza-cancelar").style.display = sim ? "" : "none";
+    $("#limpeza-prog-wrap").style.display = sim ? "" : "none";
+  }
+
+  window.tulao.on("limpeza_progresso", d => {
+    status("#limpeza-status", `Medindo… ${d.arquivos.toLocaleString("pt-BR")} arquivos · ${d.atual}`);
+  });
+  window.tulao.on("limpeza_liberar_progresso", d => {
+    const msg = `Deixando só online… ${d.feitos} de ${d.total} · ${d.atual}`;
+    status("#limpeza-status", msg);
+    status("#limpeza-par-status", msg);
+  });
+
+  async function medirLimpeza(caminho) {
+    if (LZ.ocupado) return;
+    caminho = caminho || LZ.raizes[ddLimpezaRaiz.getValue()];
+    setOcupado(true);
+    LZ.selecionados.clear();
+    status("#limpeza-status", "Medindo…");
+    try {
+      const r = await chamar("limpeza_varrer", caminho);
+      if (r.cancelado) { status("#limpeza-status", "Medição interrompida."); return; }
+      LZ.raizMedida = r.raiz;
+      let msg = `${fmtBytes(r.disco)} em disco · ${r.arquivos.toLocaleString("pt-BR")} arquivos · ${r.segundos}s`;
+      if (r.sem_acesso) msg += ` · ${r.sem_acesso} pasta(s) sem permissão foram puladas`;
+      status("#limpeza-status", msg, "ok");
+      await abrirPastaLimpeza(r.raiz);
+    } catch (e) {
+      status("#limpeza-status", "Erro: " + e.message, "erro");
+    } finally {
+      setOcupado(false);
+    }
+  }
+
+  async function abrirPastaLimpeza(pasta) {
+    const r = await chamar("limpeza_listar", pasta);
+    LZ.pastaAtual = r.pasta;
+    LZ.itens = r.itens;
+    LZ.selecionados.clear();
+    $("#limpeza-caminho").style.display = "";
+    $("#limpeza-caminho-txt").textContent = r.pasta_bonita;
+    $("#limpeza-caminho-total").textContent = fmtBytes(r.disco);
+    $("#limpeza-voltar").disabled = !r.pai || r.pasta === LZ.raizMedida;
+    $("#limpeza-voltar").dataset.pai = r.pai || "";
+    renderListaLimpeza();
+  }
+
+  function rodapeAcoes(qtd, bytes, todosLiberaveis, algumNuvem, aoLiberar, aoLixo) {
+    const rod = el("div", { class: "limpeza-rodape" });
+    rod.appendChild(el("span", { class: "flex-1", text: qtd ? `${qtd} selecionado(s) · ${fmtBytes(bytes)}` : "Marque os itens para agir sobre eles." }));
+    const bLib = el("button", { class: "btn pequeno", text: "Deixar só online", onclick: aoLiberar });
+    bLib.disabled = !qtd || !todosLiberaveis;
+    bLib.title = "Tira do disco e mantém no Drive/Dropbox (como o Remover Download do Finder).";
+    const bLixo = el("button", { class: "btn secundario pequeno", text: "Mover pro Lixo", onclick: aoLixo });
+    bLixo.disabled = !qtd || algumNuvem;
+    bLixo.title = algumNuvem ? "Itens do Drive/Dropbox: use Deixar só online (apagar tiraria da nuvem também)." : "";
+    rod.appendChild(bLib); rod.appendChild(bLixo);
+    return rod;
+  }
+
+  function renderListaLimpeza() {
+    const box = $("#limpeza-lista");
+    box.innerHTML = "";
+    const itens = LZ.itens;
+    if (!itens.length) { box.appendChild(el("div", { class: "lista-arquivos" }, [el("div", { class: "vazio", text: "Nada ocupando espaço aqui." })])); return; }
+    const max = itens[0].disco || 1;
+    box.appendChild(el("div", { class: "limpeza-item cabeca" }, [
+      el("span"), el("span", { text: "Nome" }), el("span", { text: "" }), el("span", { class: "tam", text: "No disco" }), el("span"),
+    ]));
+    itens.forEach(it => {
+      const marcavel = it.tipo !== "soltos";
+      const cb = el("input", { type: "checkbox" });
+      cb.checked = LZ.selecionados.has(it.caminho);
+      cb.disabled = !marcavel;
+      cb.addEventListener("change", () => { cb.checked ? LZ.selecionados.add(it.caminho) : LZ.selecionados.delete(it.caminho); renderRodapeLimpeza(); });
+      const icone = it.tipo === "pasta" ? "📁" : it.tipo === "soltos" ? "⋯" : "📄";
+      const nome = el("div", { class: "nome" + (it.tipo === "pasta" ? " pasta-link" : "") }, [
+        el("span", { text: icone }), el("span", { class: "t", text: it.nome, title: it.nome }),
+      ]);
+      const selo = seloNuvem(it.nuvem);
+      if (selo) nome.appendChild(selo);
+      if (it.tipo === "pasta") nome.addEventListener("click", () => abrirPastaLimpeza(it.caminho).catch(e => toast(e.message)));
+      const barra = el("div", { class: "barrinha" }, [el("div")]);
+      barra.firstChild.style.width = Math.max(1, it.disco / max * 100) + "%";
+      const acoes = el("div", { class: "acoes" });
+      if (it.tipo !== "soltos") acoes.appendChild(el("button", { class: "btn secundario pequeno", text: "Finder", onclick: () => chamar("abrir_pasta_no_finder", it.caminho) }));
+      box.appendChild(el("div", { class: "limpeza-item" }, [cb, nome, barra, el("span", { class: "tam", text: fmtBytes(it.disco) }), acoes]));
+    });
+    box.appendChild(el("div", { id: "limpeza-rodape-slot" }));
+    renderRodapeLimpeza();
+  }
+
+  function renderRodapeLimpeza() {
+    const slot = $("#limpeza-rodape-slot");
+    if (!slot) return;
+    const sel = LZ.itens.filter(i => LZ.selecionados.has(i.caminho));
+    const bytes = sel.reduce((s, i) => s + i.disco, 0);
+    slot.innerHTML = "";
+    slot.appendChild(rodapeAcoes(sel.length, bytes, sel.length && sel.every(i => i.liberavel), sel.some(i => i.nuvem),
+      () => liberarLimpeza(sel.map(i => i.caminho), `${sel.length} item(ns), ${fmtBytes(bytes)}`),
+      () => lixoLimpeza(sel.map(i => i.caminho), `${sel.length} item(ns), ${fmtBytes(bytes)}`)));
+  }
+
+  async function depoisDeAgir() {
+    await carregarResumoLimpeza();
+    if (LZ.pastaAtual) await abrirPastaLimpeza(LZ.pastaAtual).catch(() => {});
+    if (LZ.parados.length) buscarParados(true);
+  }
+
+  async function liberarLimpeza(caminhos, descricao, tudo) {
+    const ok = await confirmar("Deixar só online",
+      `Tirar do disco ${descricao}? Os arquivos continuam no Drive/Dropbox e baixam de novo quando você abrir.` +
+      (tudo ? " Pode demorar se houver muita coisa baixada." : ""), "Deixar só online");
+    if (!ok) return;
+    status("#limpeza-status", "Deixando só online…");
+    try {
+      const r = await chamar("limpeza_liberar", caminhos);
+      let msg = `Pronto: ${fmtBytes(r.liberado)} liberados em ${r.arquivos} arquivo(s).`;
+      if (r.n_falhas) msg += ` ${r.n_falhas} não saíram (podem estar marcados como "disponível off-line" ou abertos em algum app).`;
+      if (r.nao_suportados && r.nao_suportados.length) msg += " " + r.nao_suportados[0].motivo;
+      status("#limpeza-status", msg, r.n_falhas ? "erro" : "ok");
+      status("#limpeza-par-status", msg, r.n_falhas ? "erro" : "ok");
+      toast(`${fmtBytes(r.liberado)} liberados`);
+      await depoisDeAgir();
+    } catch (e) {
+      status("#limpeza-status", "Erro: " + e.message, "erro");
+    }
+  }
+
+  async function lixoLimpeza(caminhos, descricao) {
+    const ok = await confirmar("Mover pro Lixo", `Mover ${descricao} pro Lixo? O espaço só volta quando você esvaziar o Lixo.`, "Mover pro Lixo");
+    if (!ok) return;
+    try {
+      const r = await chamar("limpeza_lixo", caminhos);
+      let msg = `${r.movidos.length} item(ns) no Lixo (${fmtBytes(r.liberado)}). Esvazie o Lixo para liberar o espaço.`;
+      if (r.falhas.length) msg += ` ${r.falhas.length} não foram movidos.`;
+      status("#limpeza-status", msg, r.falhas.length ? "erro" : "ok");
+      status("#limpeza-par-status", msg, r.falhas.length ? "erro" : "ok");
+      await depoisDeAgir();
+    } catch (e) {
+      status("#limpeza-status", "Erro: " + e.message, "erro");
+    }
+  }
+
+  $("#limpeza-varrer").addEventListener("click", () => medirLimpeza());
+  $("#limpeza-cancelar").addEventListener("click", () => chamar("limpeza_cancelar"));
+  $("#limpeza-escolher").addEventListener("click", async () => {
+    const pasta = await chamar("escolher_pasta");
+    if (!pasta) return;
+    const rotulo = "Pasta: " + pasta.split("/").pop();
+    LZ.raizes[rotulo] = pasta;
+    ddLimpezaRaiz.setOptions(Object.keys(LZ.raizes), rotulo);
+    medirLimpeza(pasta);
+  });
+  $("#limpeza-voltar").addEventListener("click", () => {
+    const pai = $("#limpeza-voltar").dataset.pai;
+    if (pai) abrirPastaLimpeza(pai).catch(e => toast(e.message));
+  });
+
+  // --- Arquivos grandes parados
+
+  async function buscarParados(silencioso) {
+    try {
+      const r = await chamar("limpeza_parados", $("#limpeza-par-mb").value, $("#limpeza-par-dias").value);
+      LZ.parados = r.itens;
+      LZ.selParados.clear();
+      if (!silencioso) status("#limpeza-par-status", r.qtd ? `${r.qtd} arquivo(s) ocupando ${fmtBytes(r.total)}.` : "Nenhum arquivo nessas condições.", r.qtd ? "" : "ok");
+      renderParados();
+    } catch (e) {
+      status("#limpeza-par-status", e.message, "erro");
+    }
+  }
+
+  function renderParados() {
+    const box = $("#limpeza-par-lista");
+    box.innerHTML = "";
+    if (!LZ.parados.length) return;
+    const tudo = el("input", { type: "checkbox" });
+    tudo.addEventListener("change", () => { LZ.parados.forEach(a => tudo.checked ? LZ.selParados.add(a.caminho) : LZ.selParados.delete(a.caminho)); renderParados(); });
+    tudo.checked = LZ.selParados.size === LZ.parados.length;
+    box.appendChild(el("div", { class: "limpeza-item cabeca" }, [tudo, el("span", { text: "Arquivo" }), el("span", { text: "Parado há" }), el("span", { class: "tam", text: "No disco" }), el("span")]));
+    LZ.parados.forEach(a => {
+      const cb = el("input", { type: "checkbox" });
+      cb.checked = LZ.selParados.has(a.caminho);
+      cb.addEventListener("change", () => { cb.checked ? LZ.selParados.add(a.caminho) : LZ.selParados.delete(a.caminho); renderRodapeParados(); });
+      const col = el("div", { class: "col" }, [el("span", { class: "t", text: a.nome, title: a.nome }), el("span", { class: "sub", text: a.caminho_bonito, title: a.caminho_bonito })]);
+      const nome = el("div", { class: "nome" }, [col]);
+      const selo = seloNuvem(a.nuvem);
+      if (selo) nome.appendChild(selo);
+      const acoes = el("div", { class: "acoes" }, [el("button", { class: "btn secundario pequeno", text: "Finder", onclick: () => chamar("abrir_pasta_no_finder", a.caminho) })]);
+      box.appendChild(el("div", { class: "limpeza-item" }, [cb, nome, el("span", { text: `${a.dias} dias` }), el("span", { class: "tam", text: fmtBytes(a.disco) }), acoes]));
+    });
+    box.appendChild(el("div", { id: "limpeza-par-rodape-slot" }));
+    renderRodapeParados();
+  }
+
+  function renderRodapeParados() {
+    const slot = $("#limpeza-par-rodape-slot");
+    if (!slot) return;
+    const sel = LZ.parados.filter(a => LZ.selParados.has(a.caminho));
+    const bytes = sel.reduce((s, a) => s + a.disco, 0);
+    slot.innerHTML = "";
+    slot.appendChild(rodapeAcoes(sel.length, bytes, sel.length && sel.every(a => a.liberavel), sel.some(a => a.nuvem),
+      () => liberarLimpeza(sel.map(a => a.caminho), `${sel.length} arquivo(s), ${fmtBytes(bytes)}`),
+      () => lixoLimpeza(sel.map(a => a.caminho), `${sel.length} arquivo(s), ${fmtBytes(bytes)}`)));
+  }
+
+  $("#limpeza-par-buscar").addEventListener("click", () => buscarParados(false));
+
+  // --- Automático
+
+  function mostrarUltimoAutomatico(u) {
+    if (!u || !u.quando) { $("#limpeza-auto-ultimo").textContent = ""; return; }
+    const quando = new Date(u.quando * 1000).toLocaleString("pt-BR");
+    let t = `Última rodada: ${quando}.`;
+    if (u.liberado) t += ` Liberou ${fmtBytes(u.liberado)}.`;
+    if (u.parados && u.parados.length) t += ` Achou ${u.parados.length} arquivo(s) grande(s) parado(s).`;
+    if (u.erro) t += " Erro: " + u.erro;
+    $("#limpeza-auto-ultimo").textContent = t;
+  }
+
+  async function carregarConfigLimpeza() {
+    try {
+      const c = await chamar("limpeza_config");
+      $("#limpeza-auto-avisar").checked = !!c.avisar;
+      $("#limpeza-auto-mb").value = c.avisar_mb;
+      $("#limpeza-auto-dias").value = c.avisar_dias;
+      $("#limpeza-auto-liberar").checked = !!c.liberar_auto;
+      $("#limpeza-auto-lib-dias").value = c.liberar_dias;
+      $("#limpeza-auto-hora").value = c.hora;
+      status("#limpeza-auto-status", c.agendado ? `Ligado: roda todo dia às ${c.hora}h.` : "Desligado.");
+    } catch (e) {}
+  }
+
+  $("#limpeza-auto-salvar").addEventListener("click", async () => {
+    try {
+      const c = await chamar("limpeza_salvar_config", {
+        avisar: $("#limpeza-auto-avisar").checked,
+        avisar_mb: Number($("#limpeza-auto-mb").value),
+        avisar_dias: Number($("#limpeza-auto-dias").value),
+        liberar_auto: $("#limpeza-auto-liberar").checked,
+        liberar_dias: Number($("#limpeza-auto-lib-dias").value),
+        hora: Number($("#limpeza-auto-hora").value),
+      });
+      status("#limpeza-auto-status", c.agendado ? `Salvo. Roda todo dia às ${c.hora}h, mesmo com o app fechado.` : "Salvo. Automático desligado.", "ok");
+    } catch (e) {
+      status("#limpeza-auto-status", "Erro: " + e.message, "erro");
+    }
+  });
+
+  $("#limpeza-auto-rodar").addEventListener("click", async () => {
+    const btn = $("#limpeza-auto-rodar");
+    btn.disabled = true;
+    status("#limpeza-auto-status", "Rodando… (pode levar alguns minutos)");
+    try {
+      const u = await chamar("limpeza_rodar_agora");
+      mostrarUltimoAutomatico(u);
+      status("#limpeza-auto-status", "Pronto. O resumo também aparece nas notificações do Mac.", "ok");
+      carregarResumoLimpeza();
+    } catch (e) {
+      status("#limpeza-auto-status", "Erro: " + e.message, "erro");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $all("#limpeza-subabas .subaba-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      $all("#limpeza-subabas .subaba-btn").forEach(b => b.classList.toggle("ativa", b === btn));
+      $all(".limpeza-sub").forEach(c => c.classList.toggle("ativa", c.id === "limpeza-sub-" + btn.dataset.limpezaSub));
+    });
+  });
+
+  $all('.aba-btn[data-aba="limpeza"]').forEach(btn => btn.addEventListener("click", () => {
+    if (LZ.carregou) return;
+    LZ.carregou = true;
+    carregarResumoLimpeza();
+    carregarConfigLimpeza();
+  }));
 
   // ============================================================= boot
 

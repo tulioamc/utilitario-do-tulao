@@ -22,6 +22,7 @@ APP="$STAGE/$NOME.app"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
 cp app.py "$APP/Contents/Resources/app.py"
+cp limpeza.py "$APP/Contents/Resources/limpeza.py"
 cp -r web "$APP/Contents/Resources/web"
 
 # O verificador de atualização (dentro do programa) chama o updater.py que

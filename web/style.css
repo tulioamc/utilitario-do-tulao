@@ -339,7 +339,69 @@ table.fontes tbody td { font-size: 14px; color: var(--texto); padding: 10px 14px
 ::-webkit-scrollbar-thumb { background: #d9d9de; border-radius: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 
+/* ---------------------------------------------------------------- Limpeza */
+
+.limpeza-topo { display: grid; grid-template-columns: 300px 1fr; gap: 16px; margin-bottom: 16px; }
+.limpeza-topo .card { padding: 18px 20px; }
+.limpeza-rotulo { font-size: 12px; font-weight: 700; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+.limpeza-numero { font-size: 26px; font-weight: 700; color: var(--texto); margin-bottom: 10px; }
+.limpeza-barra { height: 10px; background: #e5e5ea; border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
+.limpeza-barra > div { height: 100%; background: var(--roxo); width: 0; transition: width .3s; }
+.limpeza-nuvens-lista { display: flex; flex-direction: column; gap: 8px; }
+.limpeza-nuvem { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.limpeza-nuvem .nome { font-weight: 700; color: var(--texto); }
+.limpeza-nuvem .conta { color: var(--texto-secundario); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.limpeza-nuvem .acoes { margin-left: auto; display: flex; gap: 6px; flex-shrink: 0; }
+
+.limpeza-sub { display: none; }
+.limpeza-sub.ativa { display: block; }
+
+.limpeza-caminho { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--texto-secundario); }
+.limpeza-total { font-weight: 700; color: var(--texto); font-size: 14px; }
+
+.limpeza-lista { border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
+.limpeza-lista:empty { display: none; }
+.limpeza-item {
+  display: grid; grid-template-columns: 22px 1fr 150px 84px auto; align-items: center; gap: 10px;
+  padding: 8px 12px; border-top: 1px solid var(--borda); font-size: 13px; color: var(--texto);
+}
+.limpeza-item:first-child { border-top: none; }
+.limpeza-item.cabeca { background: var(--fundo); font-size: 12px; font-weight: 700; color: var(--texto-secundario); }
+.limpeza-item .nome { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.limpeza-item .nome span.t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.limpeza-item .nome .sub { font-size: 11px; color: var(--texto-apagado); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.limpeza-item .nome .col { display: flex; flex-direction: column; min-width: 0; }
+.limpeza-item .pasta-link { cursor: pointer; }
+.limpeza-item .pasta-link:hover span.t { color: var(--roxo); text-decoration: underline; }
+.limpeza-item .barrinha { height: 6px; border-radius: 3px; background: #ececf0; overflow: hidden; }
+.limpeza-item .barrinha > div { height: 100%; background: var(--roxo); }
+.limpeza-item .tam { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.limpeza-item .acoes { display: flex; gap: 6px; justify-content: flex-end; }
+.limpeza-item input[type=checkbox] { accent-color: var(--vermelho); }
+.limpeza-item.desabilitado { opacity: .5; }
+
+.selo { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+.selo.drive { background: rgba(26,115,232,.12); color: #1a73e8; }
+.selo.dropbox { background: rgba(0,97,254,.12); color: #0061fe; }
+.selo.outro { background: var(--roxo-claro); color: var(--roxo); }
+.selo.antigo { background: #fff4d6; color: #a16207; }
+
+.limpeza-rodape {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  background: var(--fundo); border-top: 1px solid var(--borda); font-size: 13px;
+}
+.limpeza-rodape .flex-1 { color: var(--texto-secundario); }
+
+.limpeza-auto-linha { font-size: 14px !important; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+input[type=number].mini { height: 32px; width: 70px; padding: 0 8px; font-size: 14px; margin: 0 4px; text-align: center; }
+
+@keyframes limpeza-indet { 0% { margin-left: -30%; } 100% { margin-left: 100%; } }
+.limpeza-barra-indet { width: 30% !important; animation: limpeza-indet 1.2s linear infinite; }
+
 /* ------------------------------------------------------------- Modo escuro */
+:root[data-tema="escuro"] .limpeza-barra,
+:root[data-tema="escuro"] .limpeza-item .barrinha { background: #3a3a3d; }
+:root[data-tema="escuro"] .selo.antigo { background: #3d3418; color: #fbbf24; }
 /* As variáveis de "cromo" da interface são sobrescritas via JS (igual às
    cores customizáveis), então aqui só ficam os poucos valores fixos que
    não seguem var(--...) e precisam de um ajuste manual no escuro. */

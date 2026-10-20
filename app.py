@@ -35,7 +35,7 @@ try:
 except Exception:
     TTFont = None
 
-APP_VERSION = "3.4.0"
+APP_VERSION = "3.5.0"
 GITHUB_REPO = "tulioamc/utilitario-do-tulao"
 GITHUB_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 
@@ -1232,6 +1232,117 @@ class Api:
         except Exception as e:
             return self._erro(e)
 
+    # -- Limpeza --------------------------------------------------------
+
+    def _limpeza(self):
+        import limpeza
+        return limpeza
+
+    def limpeza_resumo(self):
+        try:
+            L = self._limpeza()
+            uso = shutil.disk_usage(str(Path.home()))
+            return {"total": uso.total, "livre": uso.free, "usado": uso.total - uso.free,
+                    "nuvens": L.detectar_nuvens(), "home": str(Path.home()),
+                    "tem_evict": Path(L.FILEPROVIDERCTL).exists(),
+                    "ultimo": L.ler_ultimo()}
+        except Exception as e:
+            return self._erro(e)
+
+    def limpeza_varrer(self, raiz):
+        L = self._limpeza()
+        self._limpeza_cancelar = threading.Event()
+        try:
+            raiz = str(Path(raiz or Path.home()).expanduser())
+            v = L.Varredura(raiz).executar(
+                progresso=lambda d: self._emit("limpeza_progresso", d),
+                cancelar=self._limpeza_cancelar)
+            self._limpeza_scan = v
+            self._limpeza_nuvens = L.detectar_nuvens()
+            return {"ok": True, "raiz": raiz, "raiz_bonita": L.bonito(raiz),
+                    "disco": v.total.get(raiz, 0), "arquivos": v.n_arquivos,
+                    "sem_acesso": v.sem_acesso, "segundos": round(v.fim - v.inicio, 1)}
+        except L.Cancelado:
+            return {"cancelado": True}
+        except Exception as e:
+            return self._erro(e)
+
+    def limpeza_cancelar(self):
+        ev = getattr(self, "_limpeza_cancelar", None)
+        if ev:
+            ev.set()
+        return {"ok": True}
+
+    def limpeza_listar(self, pasta):
+        try:
+            L = self._limpeza()
+            v = getattr(self, "_limpeza_scan", None)
+            if not v or not v.contem(pasta):
+                raise RuntimeError("Varra a pasta primeiro.")
+            itens = v.listar(pasta, self._limpeza_nuvens)
+            return {"pasta": pasta, "pasta_bonita": L.bonito(pasta), "disco": v.total.get(pasta, 0),
+                    "pai": v.pai.get(pasta), "itens": itens}
+        except Exception as e:
+            return self._erro(e)
+
+    def limpeza_parados(self, min_mb, dias):
+        try:
+            L = self._limpeza()
+            v = getattr(self, "_limpeza_scan", None)
+            if not v:
+                raise RuntimeError("Varra uma pasta primeiro.")
+            lista = v.grandes_parados(float(min_mb) * L.MB, float(dias), self._limpeza_nuvens)
+            for a in lista:
+                a["caminho_bonito"] = L.bonito(a["caminho"])
+            return {"itens": lista[:500], "total": sum(a["disco"] for a in lista), "qtd": len(lista)}
+        except Exception as e:
+            return self._erro(e)
+
+    def _limpeza_descontar(self, por_arquivo):
+        v = getattr(self, "_limpeza_scan", None)
+        if v:
+            for caminho, liberado in por_arquivo.items():
+                v.descontar(caminho, liberado)
+
+    def limpeza_liberar(self, caminhos):
+        try:
+            L = self._limpeza()
+            self._limpeza_cancelar = threading.Event()
+            r = L.liberar(list(caminhos or []), progresso=lambda d: self._emit("limpeza_liberar_progresso", d),
+                          cancelar=self._limpeza_cancelar)
+            self._limpeza_descontar(r.pop("por_arquivo", {}))
+            return r
+        except Exception as e:
+            return self._erro(e)
+
+    def limpeza_lixo(self, caminhos):
+        try:
+            L = self._limpeza()
+            r = L.mover_para_lixo(list(caminhos or []))
+            self._limpeza_descontar({m["caminho"]: m["disco"] for m in r["movidos"]})
+            r["liberado"] = sum(m["disco"] for m in r["movidos"])
+            return r
+        except Exception as e:
+            return self._erro(e)
+
+    def limpeza_config(self):
+        try:
+            return self._limpeza().ler_config()
+        except Exception as e:
+            return self._erro(e)
+
+    def limpeza_salvar_config(self, cfg):
+        try:
+            return self._limpeza().salvar_config(cfg, sys.executable, str(Path(__file__).resolve()))
+        except Exception as e:
+            return self._erro(e)
+
+    def limpeza_rodar_agora(self):
+        try:
+            return self._limpeza().rodar_automatico(avisar_usuario=True)
+        except Exception as e:
+            return self._erro(e)
+
     # -- Atualização --------------------------------------------------------
 
     def versao_atual(self):
@@ -1248,6 +1359,12 @@ class Api:
 
 
 def main():
+    if "--limpeza-automatica" in sys.argv:
+        # Chamado pelo agendamento diário (LaunchAgent), sem abrir janela.
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import limpeza
+        limpeza.rodar_automatico()
+        return
     import webview
     api = Api()
     web_dir = Path(__file__).with_name("web")

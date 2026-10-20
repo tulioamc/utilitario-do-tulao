@@ -86,6 +86,13 @@
       </svg>
       <span class="rotulo">Código</span>
     </button>
+    <button type="button" class="aba-btn" data-aba="limpeza">
+      <svg width="22" height="22" viewBox="0 0 91.67 91.67" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="12.72" y="13.84" width="65.96" height="64" rx="13.26" ry="13.26"/>
+        <path d="M30 34h32M41 34v-5h10v5M34 34l2.5 26a3 3 0 0 0 3 2.7h12.9a3 3 0 0 0 3-2.7L58 34"/>
+      </svg>
+      <span class="rotulo">Limpeza</span>
+    </button>
   </nav>
 
   <main class="main tulao-scroll">
@@ -422,7 +429,101 @@
       </div>
     </section>
 
+    <!-- ======================================================== LIMPEZA -->
+    <section class="pagina" id="pagina-limpeza">
+      <div class="titulo-pagina">
+        <div class="t">Limpeza</div>
+        <div class="s">Veja o que ocupa espaço de verdade no Mac e devolva pro Drive e pro Dropbox o que não precisa estar baixado.</div>
+      </div>
+
+      <div class="limpeza-topo">
+        <div class="card limpeza-disco">
+          <div class="limpeza-rotulo">Disco do Mac</div>
+          <div class="limpeza-numero" id="limpeza-livre">—</div>
+          <div class="limpeza-barra"><div id="limpeza-barra-uso"></div></div>
+          <div class="pista" id="limpeza-disco-detalhe">Carregando…</div>
+        </div>
+        <div class="card limpeza-nuvens">
+          <div class="limpeza-rotulo">Nuvens neste Mac</div>
+          <div id="limpeza-nuvens-lista" class="limpeza-nuvens-lista"><div class="pista">Procurando…</div></div>
+        </div>
+      </div>
+
+      <div class="subabas" id="limpeza-subabas" style="margin-bottom:16px">
+        <button class="subaba-btn ativa" data-limpeza-sub="pastas">Pastas por tamanho</button>
+        <button class="subaba-btn" data-limpeza-sub="parados">Arquivos grandes parados</button>
+        <button class="subaba-btn" data-limpeza-sub="auto">Automático</button>
+      </div>
+
+      <!-- Pastas por tamanho -->
+      <div class="card limpeza-sub ativa" id="limpeza-sub-pastas">
+        <div class="linha-flex" style="margin-bottom:14px;flex-wrap:wrap">
+          <div id="limpeza-raiz-dd" style="width:300px"></div>
+          <button class="btn secundario" id="limpeza-escolher">Outra pasta…</button>
+          <button class="btn" id="limpeza-varrer">Medir</button>
+          <button class="btn secundario" id="limpeza-cancelar" style="display:none">Parar</button>
+        </div>
+        <div class="progresso" id="limpeza-prog-wrap" style="display:none"><div class="barra limpeza-barra-indet" id="limpeza-prog"></div></div>
+        <div class="status" id="limpeza-status" style="margin-bottom:12px">Escolha onde medir e clique em Medir. A pasta pessoal inteira pode levar alguns minutos.</div>
+
+        <div class="limpeza-caminho" id="limpeza-caminho" style="display:none">
+          <button class="btn secundario pequeno" id="limpeza-voltar">← Voltar</button>
+          <div class="flex-1 texto-truncado" id="limpeza-caminho-txt"></div>
+          <div class="limpeza-total" id="limpeza-caminho-total"></div>
+        </div>
+        <div class="limpeza-lista" id="limpeza-lista"></div>
+      </div>
+
+      <!-- Arquivos grandes parados -->
+      <div class="card limpeza-sub" id="limpeza-sub-parados">
+        <div class="linha-flex" style="margin-bottom:14px;flex-wrap:wrap">
+          <span>Maiores que</span>
+          <input type="number" id="limpeza-par-mb" value="200" min="10" style="width:90px">
+          <span>MB, sem abrir há</span>
+          <input type="number" id="limpeza-par-dias" value="60" min="1" style="width:80px">
+          <span>dias</span>
+          <button class="btn" id="limpeza-par-buscar">Buscar</button>
+        </div>
+        <div class="status" id="limpeza-par-status" style="margin-bottom:12px">Usa a última medição da aba "Pastas por tamanho". Meça a pasta pessoal pra pegar tudo.</div>
+        <div class="limpeza-lista" id="limpeza-par-lista"></div>
+      </div>
+
+      <!-- Automático -->
+      <div class="card limpeza-sub" id="limpeza-sub-auto" style="max-width:760px">
+        <div class="construtor-dica">Roda sozinho uma vez por dia, mesmo com o app fechado.</div>
+        <label class="checkbox-linha limpeza-auto-linha">
+          <input type="checkbox" id="limpeza-auto-avisar">
+          <span>Me avisar de arquivos maiores que <input type="number" id="limpeza-auto-mb" value="500" min="10" class="mini"> MB que não abro há <input type="number" id="limpeza-auto-dias" value="60" min="1" class="mini"> dias</span>
+        </label>
+        <label class="checkbox-linha limpeza-auto-linha">
+          <input type="checkbox" id="limpeza-auto-liberar">
+          <span>Deixar só online, no Drive e no Dropbox, o que não abro há <input type="number" id="limpeza-auto-lib-dias" value="30" min="1" class="mini"> dias</span>
+        </label>
+        <label class="checkbox-linha limpeza-auto-linha" style="cursor:default">
+          <span style="margin-left:24px">Rodar todo dia às <input type="number" id="limpeza-auto-hora" value="11" min="0" max="23" class="mini"> h</span>
+        </label>
+        <div class="linha-flex" style="margin-top:18px">
+          <button class="btn" id="limpeza-auto-salvar">Salvar</button>
+          <button class="btn secundario" id="limpeza-auto-rodar">Rodar agora</button>
+        </div>
+        <div class="status" id="limpeza-auto-status" style="margin-top:10px"></div>
+        <div class="pista" id="limpeza-auto-ultimo" style="margin-top:6px"></div>
+        <div class="pista" style="margin-top:14px">O aviso aparece nas notificações do Mac. "Deixar só online" não apaga nada: o arquivo continua no Drive/Dropbox e baixa de novo quando você abrir. O Dropbox no formato antigo (pasta ~/Dropbox com o app antigo) não aceita esse comando; ele aparece só nos avisos.</div>
+      </div>
+    </section>
+
   </main>
+</div>
+
+<div class="overlay" id="limpeza-confirmar">
+  <div class="modal modal-largo">
+    <h2 id="limpeza-conf-titulo">Confirmar</h2>
+    <p id="limpeza-conf-texto"></p>
+    <div class="botoes">
+      <button class="btn secundario" id="limpeza-conf-nao">Cancelar</button>
+      <button class="btn" id="limpeza-conf-sim">Confirmar</button>
+    </div>
+  </div>
 </div>
 
 <div class="overlay" id="update-overlay">

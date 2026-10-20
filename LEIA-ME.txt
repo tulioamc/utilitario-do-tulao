@@ -128,6 +128,21 @@ ABA FONTES
   (TTF/OTF), útil quando um arquivo de fonte foi renomeado e o nome interno
   não bate mais com o nome do arquivo.
 
+ABA LIMPEZA
+  Mostra o que ocupa espaço DE VERDADE no disco (arquivo do Drive/Dropbox
+  que está "somente online" conta como zero) e ajuda a liberar.
+  - Disco e Nuvens: espaço livre do Mac e as contas do Drive/Dropbox achadas.
+    "Tudo só online" tira do disco tudo que estiver baixado daquela conta.
+  - Pastas por tamanho: clique em Medir, depois clique no nome das pastas
+    pra descer. Marque itens e use "Deixar só online" (Drive/Dropbox) ou
+    "Mover pro Lixo" (arquivos fora da nuvem).
+  - Arquivos grandes parados: lista os maiores que X MB sem abrir há Y dias.
+  - Automático: roda todo dia (mesmo com o app fechado). Pode avisar nas
+    notificações do Mac e deixar só online o que você não abre há X dias.
+  "Deixar só online" é o mesmo "Remover Download" do Finder: nada é apagado.
+  O Dropbox no formato antigo (pasta ~/Dropbox do app antigo) não aceita
+  esse comando; nele, use o botão direito › Dropbox › Tornar somente online.
+
 SOBRE DIREITOS AUTORAIS (YouTube, Instagram/TikTok e Pinterest)
   Use essas abas só para conteúdo seu, de domínio público, com licença
   aberta (Creative Commons) ou que você tenha autorização de baixar. Baixar
