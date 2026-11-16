@@ -35,7 +35,7 @@ try:
 except Exception:
     TTFont = None
 
-APP_VERSION = "3.5.1"
+APP_VERSION = "3.5.2"
 GITHUB_REPO = "tulioamc/utilitario-do-tulao"
 GITHUB_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 
