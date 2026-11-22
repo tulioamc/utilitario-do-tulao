@@ -1,0 +1,10 @@
+{
+  "name": "Minha Rotina",
+  "short_name": "Rotina",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f1",
+  "theme_color": "#17231f",
+  "description": "Calendário pessoal de estudos, academia e compromissos."
+}
